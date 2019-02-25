@@ -9,9 +9,11 @@ import { FormsModule } from '@angular/forms';
 import { 
           MatInputModule, MatCardModule,MatButtonModule,MatToolbarModule,MatExpansionModule
         } from '@angular/material';
+
 import { HeaderComponent } from './header/header/header.component';
 import { PostListComponent } from './posts/post-list/post-list.component';
 import { PostService } from './Services/post.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,8 @@ import { PostService } from './Services/post.service';
     MatCardModule,
     MatButtonModule,
     MatToolbarModule,
-    MatExpansionModule
+    MatExpansionModule,
+    HttpClientModule
   ],
   providers: [ 
     
