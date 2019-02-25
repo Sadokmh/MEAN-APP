@@ -7,10 +7,11 @@ import { AppComponent } from './app.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
 import { FormsModule } from '@angular/forms';
 import { 
-          MatInputModule, MatCardModule,MatButtonModule,MatToolbarModule,MatExpansionModule 
+          MatInputModule, MatCardModule,MatButtonModule,MatToolbarModule,MatExpansionModule
         } from '@angular/material';
 import { HeaderComponent } from './header/header/header.component';
 import { PostListComponent } from './posts/post-list/post-list.component';
+import { PostService } from './Services/post.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,9 @@ import { PostListComponent } from './posts/post-list/post-list.component';
     MatToolbarModule,
     MatExpansionModule
   ],
-  providers: [],
+  providers: [ 
+    
+   ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
