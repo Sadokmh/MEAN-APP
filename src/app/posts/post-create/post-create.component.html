@@ -1,15 +1,22 @@
 <mat-card>
     <mat-spinner *ngIf="isLoading"></mat-spinner>
-    <form *ngIf="!isLoading" (submit)="onSavePost(postForm)" #postForm="ngForm">
+    <form [formGroup]="form" *ngIf="!isLoading" (submit)="onSavePost()">
         <mat-form-field class="example-full-width">
-            <input matInput type="text" placeholder="Title" name="title" #title="ngModel" [ngModel]="post?.title" required>
-            <mat-error *ngIf="title.invalid">the title is required</mat-error>
+            <input matInput type="text" placeholder="Title" formControlName="title" >
+            <mat-error *ngIf="form.get('title').invalid">the title is required</mat-error>
         </mat-form-field>
+        <div>
+            <button mat-stroked-button type="button" (click)="filePicker.click()">Pick image</button>
+            <input type="file" #filePicker (change)="onImagePicked($event)">
+        </div>
+        <div class="image-preview" *ngIf="imagePreview !== '' && imagePreview && form.get('image').valid">
+            <img [src]="imagePreview" [alt]="form.value.title">
+        </div>
         <mat-form-field class="example-full-width">
-            <textarea matInput rows="6" placeholder="Content" name="content" #content="ngModel" [ngModel]="post?.content" required></textarea>
-            <mat-error *ngIf="content.invalid">the content is required</mat-error>
+            <textarea matInput rows="6" placeholder="Content" formControlName="content"></textarea>
+            <mat-error *ngIf="form.get('content').invalid">the content is required(must have than 5 chars)</mat-error>
         </mat-form-field>
-          <button mat-raised-button *ngIf="!title.invalid && !content.invalid"
+          <button mat-raised-button 
                   color="accent"
                   type="submit" >Save Post
           </button>
