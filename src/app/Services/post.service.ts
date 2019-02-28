@@ -22,17 +22,18 @@ export class PostService {
     getPosts(){
       //  return [...this.posts]; // te5ou les données mtaa l array this.posts w traja3hom in another new array
       this.http.get< { message:string , posts:any } >('http://localhost:3000/api/posts')
-               .pipe( map((postData) => {    // transforming response data ( to make it id not _id)
-                     return postData.posts.map( post => {
+               .pipe( map((body) => {    // transforming response data ( to make it id not _id)
+                     return body.posts.map( post => {
                          return {
                              title: post.title,
                              content: post.content,          
-                             id: post._id
+                             id: post._id,
+                             imagePath: post.imagePath
                          }
                      })
                 }))
-               .subscribe( (transformedPostData) => {
-                    this.posts = transformedPostData;
+               .subscribe( (transformedbody) => {
+                    this.posts = transformedbody;
                     this.postUpdated.next([...this.posts]);
                } );
     }
@@ -43,16 +44,21 @@ export class PostService {
     }
 
 
-    addPost(title: string, content: string) {
-        const post: Post = {
-            id: null,
-            title: title,
-            content: content
-        };
-        this.http.post<{message: string , postid:string}>('http://localhost:3000/api/posts', post )
+    addPost(title: string, content: string, image: File) {
+        //const body = {title: title , content:content , image: image};
+        const body = new FormData();
+        body.append('title',title);
+        body.append('content',content);
+        body.append('image', image, title);
+        //console.log(body.get('image'));
+        this.http.post<{message: string , post:Post}>('http://localhost:3000/api/posts', body )
                  .subscribe( (resp) => {
-                    console.log(resp.message);
-                    post.id = resp.postid;
+                    const post: Post = {
+                        id: resp.post.id,
+                        title: resp.post.title,
+                        content: resp.post.content,
+                        imagePath: resp.post.imagePath
+                    };
                     this.posts.push(post);
                     this.postUpdated.next([...this.posts]);
                     this.router.navigate(['/']);
@@ -63,17 +69,37 @@ export class PostService {
 
 
 
-    updatePost(idPost: string, titlePost:string, contentPost:string) {
-        const body = {
-            id:idPost,
-            title:titlePost,
-            content:contentPost
-        };
+    updatePost(idPost: string, titlePost:string, contentPost:string, image: File |string) {
+        let body;
+        if (typeof image === 'object') {
+             body = new FormData();
+            body.append('id',idPost);
+            body.append('title', titlePost);
+            body.append('content', contentPost);
+            body.append('image', image , titlePost);
+        }
+        else {
+             body = {
+                id:idPost,
+                title:titlePost,
+                content:contentPost,
+                imagePath: image
+            }; 
+        }
+
+       
         this.http.put(`http://localhost:3000/api/posts/update/${idPost}`,body)
                  .subscribe( ( resp ) => {
                      console.log(resp);
                      const updatedPosts = [...this.posts];
                      const oldPostIndex = updatedPosts.findIndex( p => p.id === idPost ) ;
+                     const post = {
+                         id: idPost,
+                         title: titlePost,
+                         content: contentPost,
+                         imagePath: ""
+
+                     }
                      updatedPosts[oldPostIndex] = body;
                      this.posts = updatedPosts;
                      this.router.navigate(['/']);
@@ -96,6 +122,6 @@ export class PostService {
 
     getPost(id: string) {
         //return {...this.posts.find( post => post.id === id )};
-        return this.http.get<{_id:string , title:string, content:string}>(`http://localhost:3000/api/posts/${id}`);
+        return this.http.get<{_id:string , title:string, content:string, imagePath:string}>(`http://localhost:3000/api/posts/${id}`);
     }
 }

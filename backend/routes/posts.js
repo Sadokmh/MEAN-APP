@@ -1,20 +1,51 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+
 
 const Post = require('../models/post');
 
 
-router.post('', (req,res,next) => {
+const MIME_TYPE_MAP = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg'
+};
+
+const storage = multer.diskStorage({ // where multer should put files which it detects un the incoming request
+    destination: (req,file,cb) => {
+        const isValid = MIME_TYPE_MAP[file.mimetype]; //check if the file type is one of our defined types 
+        let error = new Error('Invalid mime type');
+        if (isValid) {
+            error = null;
+        }
+        cb(error,"backend/images"); //cb: Callback
+    },
+    filename: (req,file,cb) => {
+        const name = file.originalname.toLowerCase().split(' ').join('-');
+        const ext = MIME_TYPE_MAP[file.mimetype];
+        cb(null, name + '-' + Date.now() + '.' + ext);  //cb: Callback
+    }
+});   
+
+
+router.post('', multer({storage:storage}).single('image') , (req,res,next) => {
+    console.log('Posting a new post...');
+    const url = req.protocol + '://' + req.get('host');
     const post = new Post({
         title: req.body.title,
-        content:  req.body.content
+        content:  req.body.content,
+        imagePath: url + '/images/' + req.file.filename
     });
     post.save()
         .then( post => {
-            console.log(post);
+            //console.log(post);
             res.status(201).json({
             message: 'Posts added successfully !',
-            postid: post._id
+            post: {
+                ...post,   // title: post.title,content: post.content,imagePath: post.imagePath
+                id: post._id,
+            }
         });
         })
         .catch( err => {
@@ -74,8 +105,13 @@ router.delete('/:id', (req,res,next) => {
 
 
 
-router.put('/update/:id', (req,res,next) => {
-    Post.updateOne({ _id:req.body.id }, {...req.body} )
+router.put('/update/:id', multer({storage:storage}).single('image'), (req,res,next) => {
+    
+    if (req.file) {  // ken taswira tbadlet chnal9a file fel request donc chnen3awed nafs logique mtaa create newpost 
+        const url = req.protocol + '://' + req.get('host');
+        req.body.imagePath = url + '/images/' + req.file.filename;
+    }    //ken taswira metbadletech chto93ed string (path mte3ha)
+    Post.updateOne({ _id:req.params.id }, {...req.body} )
         .then( result => {
             console.log('Post updated successfully !');
             res.status(200).json({

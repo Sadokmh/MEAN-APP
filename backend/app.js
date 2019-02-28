@@ -3,10 +3,12 @@ const mongoose = require('mongoose');
 
 const app = express();
 const bodyParser = require('body-parser');
+const path = require('path');
+const cors = require('cors');
 
 const postRoutes = require('./routes/posts');
 
-mongoose.connect("mongodb+srv://sadokmh:DJUmWaQA8DwDgQx8@cluster0-gpr8s.mongodb.net/mean-app?retryWrites=true")
+mongoose.connect("mongodb+srv://sadokmh:DJUmWaQA8DwDgQx8@cluster0-gpr8s.mongodb.net/mean-app?retryWrites=true" , { useNewUrlParser: true })
         .then( () => {
             console.log('Connected to the Database !');
         })
@@ -14,23 +16,19 @@ mongoose.connect("mongodb+srv://sadokmh:DJUmWaQA8DwDgQx8@cluster0-gpr8s.mongodb.
             console.log('Connection failed !');
         })
 
-//Allow CORS
-app.use( (req,res,next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader(
-        "Access-Control-Allow-Headers",
-        "Origin, X-Requested-with, Content-Type, Accept"
-    );
-    res.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-    );
-    next();
-} )
 
+        
+
+
+//Allow CORS
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use("/images", express.static(path.join("backend/images"))); //any request starting /images will be                                                 allowed to continue and fetched their files from there.. make sure                                            that images is the folder in backend folder
+
+
 
 app.use('/api/posts', postRoutes);
 
