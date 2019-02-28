@@ -79,7 +79,7 @@ router.get('',(req,res,next) => {
            res.status(200).json({
                message: 'Posts successfully fetched !',
                posts: fetchedPosts,
-               count: +postCount
+               count: postCount
            })
        })
        .catch( err => {
