@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { 
-          MatInputModule, MatCardModule,MatButtonModule,MatToolbarModule,MatExpansionModule, MatProgressSpinnerModule
+          MatInputModule, MatCardModule,MatButtonModule,MatToolbarModule,MatExpansionModule, MatProgressSpinnerModule, MatPaginatorModule
         } from '@angular/material';
 
 import { HeaderComponent } from './header/header/header.component';
@@ -29,6 +29,7 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserAnimationsModule,
     MatInputModule,
     MatCardModule,
+    MatPaginatorModule,
     MatButtonModule,
     MatToolbarModule,
     MatProgressSpinnerModule,

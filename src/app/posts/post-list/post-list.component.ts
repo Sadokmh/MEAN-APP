@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Post } from '../post.model';
 import { PostService } from '../../Services/post.service';
 import { Subscription } from '../../../../node_modules/rxjs';
+import { PageEvent } from '../../../../node_modules/@angular/material';
 
 @Component({
   selector: 'app-post-list',
@@ -20,7 +21,14 @@ export class PostListComponent implements OnInit,OnDestroy {
   
   posts:Post[] = [] ;
   private postsSub: Subscription;
-  isLoading = false;
+
+  isLoading = false; //Progession spinner
+
+  //pagination
+  totalPosts = 0;
+  postsPerPage = 2;
+  currentPage = 1;
+  pageSizeOptionByUser = [1, 2 , 5 , 10];
 
 
   constructor(
@@ -28,11 +36,12 @@ export class PostListComponent implements OnInit,OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.postService.getPosts()
+    this.postService.getPosts(this.postsPerPage, this.currentPage)
     this.isLoading = true;
     this.postsSub = this.postService.getPostUpdateListener()
-                    .subscribe(( posts: Post[] ) => {
-                      this.posts=posts;
+                    .subscribe( ( postData: {posts: Post[] , postCount: number} ) => {
+                      this.posts=postData.posts
+                      this.totalPosts = postData.postCount;
                       this.isLoading = false;
                     });
   }
@@ -44,7 +53,23 @@ export class PostListComponent implements OnInit,OnDestroy {
 
 
   onDelete(id:string) {
-    this.postService.deletePost(id);
+      this.isLoading = true;
+      this.postService.deletePost(id)
+                      .subscribe( () => {
+                              this.postService.getPosts(this.postsPerPage,this.currentPage);
+                       })
   }
+
+
+
+  //pagination
+    onChangedPage(pageData: PageEvent) {
+      this.isLoading = true;
+      this.currentPage = pageData.pageIndex + 1; // +1 because this index starts from 0
+      this.postsPerPage = pageData.pageSize
+      this.postService.getPosts(this.postsPerPage,this.currentPage);
+      
+    }
+
 
 }
