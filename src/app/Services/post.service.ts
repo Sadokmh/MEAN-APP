@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { map, count } from 'rxjs/operators';
 import { Router } from '../../../node_modules/@angular/router';
 import { AuthService } from './auth.service';
+import { NotifyService } from './notify.service';
 
 @Injectable({providedIn: 'root'})
 export class PostService {
@@ -15,7 +16,8 @@ export class PostService {
     constructor(
         private http: HttpClient,
         private router: Router,
-        public authService: AuthService
+        public authService: AuthService,
+        private notifyService: NotifyService
     ) {
 
     }
@@ -62,7 +64,7 @@ export class PostService {
         //console.log(body.get('image'));
         this.http.post<{message: string , post:Post}>('http://localhost:3000/api/posts', body )
                  .subscribe( (resp) => {
-                    
+                    this.notifyService.notify('Post successfully created !', 'success');
                     this.router.navigate(['/']);
                  })
         
@@ -93,7 +95,7 @@ export class PostService {
        
         this.http.put(`http://localhost:3000/api/posts/update/${idPost}`,body)
                  .subscribe( ( resp ) => {
-                    
+                     this.notifyService.notify('Post successfully updated !', 'success');
                      this.router.navigate(['/']);
                  })
     }

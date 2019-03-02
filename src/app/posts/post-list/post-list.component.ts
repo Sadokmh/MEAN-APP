@@ -4,6 +4,7 @@ import { PostService } from '../../Services/post.service';
 import { Subscription } from '../../../../node_modules/rxjs';
 import { PageEvent } from '../../../../node_modules/@angular/material';
 import { AuthService } from '../../Services/auth.service';
+import { NotifyService } from '../../Services/notify.service';
 
 @Component({
   selector: 'app-post-list',
@@ -31,7 +32,8 @@ export class PostListComponent implements OnInit,OnDestroy {
 
   constructor(
     public postService: PostService,
-    private authService: AuthService
+    private authService: AuthService,
+    private notifyService: NotifyService
   ) { }
 
   ngOnInit() {
@@ -64,7 +66,10 @@ export class PostListComponent implements OnInit,OnDestroy {
       this.isLoading = true;
       this.postService.deletePost(id)
                       .subscribe( () => {
+                              this.notifyService.notify('Post successfully deleted !', 'success');
                               this.postService.getPosts(this.postsPerPage,this.currentPage);
+                       }, err => {
+                         this.isLoading = false;
                        })
   }
 
@@ -80,7 +85,7 @@ export class PostListComponent implements OnInit,OnDestroy {
     }
 
 
-    
+
 
 
 }

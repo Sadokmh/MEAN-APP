@@ -1,15 +1,17 @@
-import { Component, OnInit , EventEmitter, Output } from '@angular/core';
+import { Component, OnInit , EventEmitter, Output, OnDestroy } from '@angular/core';
 import { Post } from '../post.model';
 import { NgForm, FormGroup, FormControl, Validators } from '../../../../node_modules/@angular/forms';
 import { PostService } from '../../Services/post.service';
 import { ActivatedRoute, ParamMap } from '../../../../node_modules/@angular/router';
 import { mimeType } from './mime-type.validator';
+import { Subscription } from '../../../../node_modules/rxjs';
+import { AuthService } from '../../Services/auth.service';
 @Component({
   selector: 'app-post-create',
   templateUrl: './post-create.component.html',
   styleUrls: ['./post-create.component.css']
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit,OnDestroy {
 
 
   enteredTitle= '';
@@ -21,14 +23,19 @@ export class PostCreateComponent implements OnInit {
   isLoading = false;
   form: FormGroup;
   imagePreview: string;
+  private authStatusSub: Subscription;
 
   constructor(
     public postService: PostService,
+    private authService: AuthService,
     public route: ActivatedRoute
   ) { }
 
   ngOnInit() {
-
+    
+    this.authStatusSub = this.authService.getAuthStatusListenner().subscribe(authStatus => {
+      this.isLoading = false;
+    });
     this.form = new FormGroup({
       title: new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
       content: new FormControl(null, {validators: [Validators.required, Validators.minLength(5)]}),
@@ -45,7 +52,8 @@ export class PostCreateComponent implements OnInit {
             id: postData._id,
             title: postData.title,
             content: postData.content,
-            imagePath: postData.imagePath
+            imagePath: postData.imagePath,
+            creator: postData.creator
           }
           this.form.setValue({
             title: this.post.title,
@@ -90,6 +98,11 @@ export class PostCreateComponent implements OnInit {
       this.postService.updatePost(this.postId,this.form.value.title,this.form.value.content, this.form.value.image);
     }
     this.form.reset();
+  }
+
+
+  ngOnDestroy(){
+    this.authStatusSub.unsubscribe();
   }
 
 }

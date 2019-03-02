@@ -1,0 +1,6 @@
+<div  *ngIf="message && message.type == 'success'">
+    <mat-card class="alert-success">{{ message.message }}</mat-card>
+</div>
+<div  *ngIf="message && message.type == 'error'">
+    <mat-card class="alert-danger">{{ message.message }}</mat-card>
+</div>

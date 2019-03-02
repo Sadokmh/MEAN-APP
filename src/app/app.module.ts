@@ -17,6 +17,8 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
+import { ErrorInterceptor } from './error-interceptor';
+import { NotifyComponent } from './notify/notify/notify.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,8 @@ import { AuthInterceptor } from './auth/auth-interceptor';
     HeaderComponent,
     PostListComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    NotifyComponent
   ],
   imports: [
     BrowserModule,
@@ -43,8 +46,9 @@ import { AuthInterceptor } from './auth/auth-interceptor';
     HttpClientModule
   ],
   providers: [ 
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor , multi: true} // provide the Auth interceptor
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor , multi: true},// provide the Auth interceptor
                                                                           // multi, because we may have many interceptors
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor , multi: true}                                                                     
    ],
   bootstrap: [AppComponent]
 })

@@ -1,0 +1,17 @@
+
+
+.alert-danger{
+    background: lightcoral;
+    background-color: lightcoral;
+    color: bisque;
+    text-align: center;
+    border-radius: 0%;
+}
+
+.alert-success{
+    background: lightgreen;
+    background-color: lightgreen;
+    color: bisque;
+    text-align: center;
+    border-radius: 0%;
+}

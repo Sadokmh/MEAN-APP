@@ -3,6 +3,7 @@ import { HttpClient } from '../../../node_modules/@angular/common/http';
 import { AuthData } from '../auth/auth-data.model';
 import { Subject } from '../../../node_modules/rxjs';
 import { Router } from '../../../node_modules/@angular/router';
+import { NotifyService } from './notify.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private notifyService: NotifyService
   ) { }
 
 
@@ -25,13 +27,16 @@ export class AuthService {
   createUser(email:string, password: string) {
     const authData: AuthData = {
       email: email,
-      password: password
+      password: password  
     };
 
     this.http.post('http://localhost:3000/api/users/signup',authData)
              .subscribe(resp => {
-               console.log(resp);
-             })
+               this.notifyService.notify('Account successfully created !' , 'success');
+               this.router.navigate(['/']);
+             }, error => {
+               this.authStatusListenner.next(false);
+             });
   }
 
 
@@ -53,8 +58,11 @@ export class AuthService {
                 const now = new Date();
                 const expirationDate = new Date(now.getTime() + (+expiresInDuration) * 1000);
                 this.saveAuthData(this.token,this.userId,expirationDate);
+                this.notifyService.notify('Logged in successfully !', 'success');
                 this.router.navigate(['/']);
                }
+             }, error => {
+               this.authStatusListenner.next(false);
              })
   }
 
@@ -67,6 +75,7 @@ export class AuthService {
     this.userId = null; 
     clearTimeout(this.tokenTimer);
     this.clearAuthData();
+    this.notifyService.notify('Logged out .. good bye !', 'error');
     this.router.navigate(['/']);
   }
 
