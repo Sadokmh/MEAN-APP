@@ -17,6 +17,7 @@ export class PostListComponent implements OnInit,OnDestroy {
   posts:Post[] = [] ;
   private postsSub: Subscription; //subscription to the list of posts
   private authStatusSub: Subscription; //subscription to know if the user is logged in or not 
+  userId: string; // the connected user's id
 
   isLoading = false; //Progession spinner
   userIsAutheticated:boolean = false ; //
@@ -35,6 +36,7 @@ export class PostListComponent implements OnInit,OnDestroy {
 
   ngOnInit() {
     this.postService.getPosts(this.postsPerPage, this.currentPage)
+    this.userId = this.authService.getUserId();
     this.isLoading = true;
     this.postsSub = this.postService.getPostUpdateListener()
                     .subscribe( ( postData: {posts: Post[] , postCount: number} ) => {
@@ -47,6 +49,7 @@ export class PostListComponent implements OnInit,OnDestroy {
     this.authStatusSub = this.authService.getAuthStatusListenner()
                                          .subscribe( isAuthenticated => {
                                             this.userIsAutheticated = isAuthenticated;
+                                            this.userId = this.authService.getUserId();
                                          });
   }
 
@@ -75,6 +78,9 @@ export class PostListComponent implements OnInit,OnDestroy {
       this.postService.getPosts(this.postsPerPage,this.currentPage);
       
     }
+
+
+    
 
 
 }

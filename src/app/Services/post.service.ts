@@ -32,13 +32,15 @@ export class PostService {
                                 title: post.title,
                                 content: post.content,          
                                 id: post._id,
-                                imagePath: post.imagePath
+                                imagePath: post.imagePath,
+                                creator: post.creator
                             };
                         }),
                         count: body.count 
                      };
                 }))
                .subscribe( (transformedBody) => {
+                    console.log(transformedBody);
                     this.posts = transformedBody.posts;
                     console.log(count);
                     this.postUpdated.next({posts: [...this.posts] , postCount:+transformedBody.count});
@@ -83,7 +85,8 @@ export class PostService {
                 id:idPost,
                 title:titlePost,
                 content:contentPost,
-                imagePath: image
+                imagePath: image,
+                creator: null
             }; 
         }
 
@@ -104,6 +107,6 @@ export class PostService {
 
     getPost(id: string) {
         //return {...this.posts.find( post => post.id === id )};
-        return this.http.get<{_id:string , title:string, content:string, imagePath:string}>(`http://localhost:3000/api/posts/${id}`);
+        return this.http.get<{_id:string , title:string, content:string, imagePath:string , creator:string}>(`http://localhost:3000/api/posts/${id}`);
     }
 }

@@ -38,7 +38,8 @@ router.post('', checkAuth, multer({storage:storage}).single('image') , (req,res,
     const post = new Post({
         title: req.body.title,
         content:  req.body.content,
-        imagePath: url + '/images/' + req.file.filename
+        imagePath: url + '/images/' + req.file.filename,
+        creator: req.userData.userId
     });
     post.save()
         .then( post => {
@@ -105,12 +106,19 @@ router.get('/:id' , (req,res,next) => {
 
 router.delete('/:id', checkAuth, (req,res,next) => {
     console.log(req.params.id);
-    Post.deleteOne({ _id: req.params.id })
+    Post.deleteOne({ _id: req.params.id, creator: req.userData.userId })
         .then( result => {
-            console.log('Post successfully deleted ! ');
-            res.status(200).json({
-                message: 'Post deleted !'
-            });
+            if ( result.n > 0 ) {        // yaani fama haja tbadlet
+                console.log('Post deleted successfully !');
+                res.status(200).json({
+                    message: 'Post successfully deleted !'
+                });
+            }
+            else {
+                res.status(401).json({
+                    message: 'Not authorized !'
+                });
+            }
         } )
         .catch( err => {
             console.log('Error occured !');
@@ -123,16 +131,30 @@ router.delete('/:id', checkAuth, (req,res,next) => {
 
 router.put('/update/:id', checkAuth, multer({storage:storage}).single('image'), (req,res,next) => {
     
-    if (req.file) {  // ken taswira tbadlet chnal9a file fel request donc chnen3awed nafs logique mtaa create newpost 
+    if (req.file) {  // ken taswira tbadlet chnal9a file fel request donc chnen3awed nafs logique mtaa create                     newpost 
         const url = req.protocol + '://' + req.get('host');
         req.body.imagePath = url + '/images/' + req.file.filename;
     }    //ken taswira metbadletech chto93ed string (path mte3ha)
-    Post.updateOne({ _id:req.params.id }, {...req.body} )
+    post = new Post({
+        _id: req.body.id,
+        title: req.body.title,
+        content: req.body.content,
+        imagePath: req.body.imagePath,
+        creator: req.userData.userId
+    })
+    Post.updateOne({ _id:req.params.id , creator: req.userData.userId }, post )
         .then( result => {
-            console.log('Post updated successfully !');
-            res.status(200).json({
-                message: 'Post successfully updated !'
-            });
+            if ( result.nModified > 0 ) {        // yaani fama haja tbadlet
+                console.log('Post updated successfully !');
+                res.status(200).json({
+                    message: 'Post successfully updated !'
+                });
+            }
+            else {
+                res.status(401).json({
+                    message: 'Not authorized !'
+                });
+            }
         })
         .catch( err => {
             console.log('Error occured while updating !');
