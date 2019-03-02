@@ -3,9 +3,14 @@ import { Injectable } from '@angular/core'
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map, count } from 'rxjs/operators';
-import { Router } from '../../../node_modules/@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { NotifyService } from './notify.service';
+import { environment } from '../../environments/environment';
+
+
+const BACK_END_URL = environment.apiUrl + '/posts';
+
 
 @Injectable({providedIn: 'root'})
 export class PostService {
@@ -26,7 +31,7 @@ export class PostService {
     getPosts(postsPerPage: number , currentPage: number){
       //  return [...this.posts]; // te5ou les données mtaa l array this.posts w traja3hom in another new array
       const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
-      this.http.get< { message:string , posts:any , count:number} >('http://localhost:3000/api/posts' + queryParams)
+      this.http.get< { message:string , posts:any , count:number} >(BACK_END_URL + queryParams)
                .pipe( map((body) => {    // transforming response data ( to make it id not _id)
                      return { 
                         posts: body.posts.map( post => {
@@ -62,7 +67,7 @@ export class PostService {
         body.append('content',content);
         body.append('image', image, title);
         //console.log(body.get('image'));
-        this.http.post<{message: string , post:Post}>('http://localhost:3000/api/posts', body )
+        this.http.post<{message: string , post:Post}>(BACK_END_URL, body )
                  .subscribe( (resp) => {
                     this.notifyService.notify('Post successfully created !', 'success');
                     this.router.navigate(['/']);
@@ -93,7 +98,7 @@ export class PostService {
         }
 
        
-        this.http.put(`http://localhost:3000/api/posts/update/${idPost}`,body)
+        this.http.put(BACK_END_URL+`/update/${idPost}`,body)
                  .subscribe( ( resp ) => {
                      this.notifyService.notify('Post successfully updated !', 'success');
                      this.router.navigate(['/']);
@@ -103,12 +108,12 @@ export class PostService {
 
 
     deletePost(postId: string) {
-        return this.http.delete(`http://localhost:3000/api/posts/${postId}`);
+        return this.http.delete(`${BACK_END_URL}/${postId}`);
     }
 
 
     getPost(id: string) {
         //return {...this.posts.find( post => post.id === id )};
-        return this.http.get<{_id:string , title:string, content:string, imagePath:string , creator:string}>(`http://localhost:3000/api/posts/${id}`);
+        return this.http.get<{_id:string , title:string, content:string, imagePath:string , creator:string}>(`${BACK_END_URL}/${id}`);
     }
 }

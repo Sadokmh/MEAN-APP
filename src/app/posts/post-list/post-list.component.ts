@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Post } from '../post.model';
 import { PostService } from '../../Services/post.service';
-import { Subscription } from '../../../../node_modules/rxjs';
-import { PageEvent } from '../../../../node_modules/@angular/material';
+import { Subscription } from 'rxjs';
+import { PageEvent } from '@angular/material';
 import { AuthService } from '../../Services/auth.service';
 import { NotifyService } from '../../Services/notify.service';
 

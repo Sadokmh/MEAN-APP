@@ -7,9 +7,9 @@ const path = require('path');
 const cors = require('cors');
 
 const postRoutes = require('./routes/posts');
-const userRoutes = require('./routes/users');
+const userRoutes = require('./routes/users'); 
 
-mongoose.connect("mongodb+srv://sadokmh:DJUmWaQA8DwDgQx8@cluster0-gpr8s.mongodb.net/mean-app?retryWrites=true" , { useNewUrlParser: true })
+mongoose.connect("mongodb+srv://sadokmh:"+process.env.MONGO_ATLAS_PW+"@cluster0-gpr8s.mongodb.net/mean-app?retryWrites=true" , { useNewUrlParser: true })
         .then( () => {
             console.log('Connected to the Database !');
         })

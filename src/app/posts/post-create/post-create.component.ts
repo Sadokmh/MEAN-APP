@@ -1,10 +1,10 @@
 import { Component, OnInit , EventEmitter, Output, OnDestroy } from '@angular/core';
 import { Post } from '../post.model';
-import { NgForm, FormGroup, FormControl, Validators } from '../../../../node_modules/@angular/forms';
+import { NgForm, FormGroup, FormControl, Validators } from '@angular/forms';
 import { PostService } from '../../Services/post.service';
-import { ActivatedRoute, ParamMap } from '../../../../node_modules/@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { mimeType } from './mime-type.validator';
-import { Subscription } from '../../../../node_modules/rxjs';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../Services/auth.service';
 @Component({
   selector: 'app-post-create',

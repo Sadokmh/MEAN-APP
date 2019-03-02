@@ -1,8 +1,8 @@
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpErrorResponse } from 
-'./../../node_modules/@angular/common/http';
+'@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError } from '../../node_modules/rxjs/operators';
-import { throwError } from '../../node_modules/rxjs';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 import { NotifyService } from './Services/notify.service';
 
 

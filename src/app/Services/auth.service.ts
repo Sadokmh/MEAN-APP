@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '../../../node_modules/@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AuthData } from '../auth/auth-data.model';
-import { Subject } from '../../../node_modules/rxjs';
-import { Router } from '../../../node_modules/@angular/router';
+import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 import { NotifyService } from './notify.service';
+import { environment } from '../../environments/environment';
+
+
+const BACK_END_URL = environment.apiUrl + '/users';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +34,7 @@ export class AuthService {
       password: password  
     };
 
-    this.http.post('http://localhost:3000/api/users/signup',authData)
+    this.http.post(BACK_END_URL + '/signup',authData)
              .subscribe(resp => {
                this.notifyService.notify('Account successfully created !' , 'success');
                this.router.navigate(['/']);
@@ -46,7 +50,7 @@ export class AuthService {
       email: email,
       password: password
     };
-    this.http.post<{token:string , userId:string, expiresIn:string}>('http://localhost:3000/api/users/login',authData)
+    this.http.post<{token:string , userId:string, expiresIn:string}>(BACK_END_URL + '/login',authData)
              .subscribe( resp => {
                this.token = resp.token;
                if (this.token) {
