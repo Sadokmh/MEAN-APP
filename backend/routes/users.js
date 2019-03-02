@@ -1,18 +1,75 @@
 const express = require("express");
 const router = express.Router();
 
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
 
 router.post('/signup' , (req,res,next) => {
-    const user = new User({
-        email: req.body.email,
-        password: req.body.password
-    });
+    console.log('Creating a new user...');
+    console.log(req.body);
+    bcrypt.hash(req.body.password,10)
+          .then( hash => {
+            const user = new User({
+                email: req.body.email,
+                password: hash
+            });
+            console.log(user);
+            user.save()
+                .then( usr => {
+                    res.status(201).json({
+                        message: 'User successfully created !',
+                        user: usr
+                    });
+                })
+                .catch( err =>{
+                    res.status(500).json({
+                        error: err
+                    });
+                });
+          });
+    
 });
 
 
+
+router.post('/login', (req,res,next) => {
+    console.log('logging in...');
+    let fetchedUser;
+    User.findOne({email: req.body.email})
+        .then( usr =>{
+            if (!usr) {
+                return res.status(401).json({
+                    message: 'Email incorrect'
+                });
+            }
+            fetchedUser=usr;   
+            return bcrypt.compare(req.body.password, usr.password);
+        })
+        .then( result =>{
+            if (!result) {
+                return res.status(401).json({
+                    message: 'Incorrect password '
+                });
+            }
+            const token = jwt.sign(
+                {email: fetchedUser.email , id: fetchedUser._id},
+                'secret_key_should_be_longer_barsha',
+                {expiresIn: '1h'}  //this is optional, yaani yo93ed valable ken 1 heure el token 
+            );
+            res.status(200).json({
+                token: token,
+                expiresIn: 3600
+            });
+        })
+        .catch( err => {
+            return res.status(401).json({
+                message: 'auth failed'
+            });
+        })
+});
 
 
 module.exports = router;

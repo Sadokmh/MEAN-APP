@@ -3,6 +3,7 @@ import { Post } from '../post.model';
 import { PostService } from '../../Services/post.service';
 import { Subscription } from '../../../../node_modules/rxjs';
 import { PageEvent } from '../../../../node_modules/@angular/material';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -12,17 +13,13 @@ import { PageEvent } from '../../../../node_modules/@angular/material';
 export class PostListComponent implements OnInit,OnDestroy {
 
 
- /* posts = [
-    { title: "first post" , content: "this is the first post content"},
-    { title: "second post" , content: "this is the second post content"},
-    { title: "third post" , content: "this is the third post content"},
-    { title: "fourth post" , content: "this is the fourth post content"}
-  ];*/
   
   posts:Post[] = [] ;
-  private postsSub: Subscription;
+  private postsSub: Subscription; //subscription to the list of posts
+  private authStatusSub: Subscription; //subscription to know if the user is logged in or not 
 
   isLoading = false; //Progession spinner
+  userIsAutheticated:boolean = false ; //
 
   //pagination
   totalPosts = 0;
@@ -32,7 +29,8 @@ export class PostListComponent implements OnInit,OnDestroy {
 
 
   constructor(
-    public postService: PostService
+    public postService: PostService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -44,11 +42,18 @@ export class PostListComponent implements OnInit,OnDestroy {
                       this.totalPosts = postData.postCount;
                       this.isLoading = false;
                     });
+    this.userIsAutheticated = this.authService.getIsAuth();
+    //zeyed but will fixed later
+    this.authStatusSub = this.authService.getAuthStatusListenner()
+                                         .subscribe( isAuthenticated => {
+                                            this.userIsAutheticated = isAuthenticated;
+                                         });
   }
 
 
   ngOnDestroy(){
     this.postsSub.unsubscribe();
+    this.authStatusSub.unsubscribe();
   }
 
 

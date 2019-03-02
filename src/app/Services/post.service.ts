@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map, count } from 'rxjs/operators';
 import { Router } from '../../../node_modules/@angular/router';
+import { AuthService } from './auth.service';
 
 @Injectable({providedIn: 'root'})
 export class PostService {
@@ -13,7 +14,8 @@ export class PostService {
 
     constructor(
         private http: HttpClient,
-        private router: Router
+        private router: Router,
+        public authService: AuthService
     ) {
 
     }

@@ -71,7 +71,7 @@ export class PostCreateComponent implements OnInit {
     this.form.get('image').updateValueAndValidity();
     const reader = new FileReader();
     reader.onload = () => {
-      this.imagePreview = reader.result ; //asynchrone , testana readAsDataUrl(file)
+       this.imagePreview = reader.result  ; //asynchrone , testana readAsDataUrl(file)
     };
     reader.readAsDataURL(file);
 

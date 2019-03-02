@@ -13,9 +13,10 @@ import {
 import { HeaderComponent } from './header/header/header.component';
 import { PostListComponent } from './posts/post-list/post-list.component';
 import { PostService } from './Services/post.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
+import { AuthInterceptor } from './auth/auth-interceptor';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { SignupComponent } from './auth/signup/signup.component';
     HttpClientModule
   ],
   providers: [ 
-    
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor , multi: true} // provide the Auth interceptor
+                                                                          // multi, because we may have many interceptors
    ],
   bootstrap: [AppComponent]
 })
